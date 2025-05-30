@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -13,7 +15,7 @@ import { Artist } from './entities/artist.entity';
 import { CreateArtistDto } from './dtos/create-artist.dto';
 import { UpdateArtistDto } from './dtos/update-artist.dto';
 
-@Controller('artists')
+@Controller('artist')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
@@ -36,6 +38,7 @@ export class ArtistController {
   }
 
   @Post()
+  @HttpCode(201)
   create(@Body() dto: CreateArtistDto) {
     return this.artistService.create(dto);
   }
@@ -52,5 +55,12 @@ export class ArtistController {
     }
 
     return updatedArtist;
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    this.artistService.delete(id);
+    return;
   }
 }

@@ -34,4 +34,8 @@ export class ArtistService {
     this.artists.splice(index, 1, newArtist);
     return newArtist;
   }
+
+  delete(id: string) {
+    this.artists = this.artists.filter((item) => item.id !== id);
+  }
 }
