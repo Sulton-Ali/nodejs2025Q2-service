@@ -36,6 +36,12 @@ export class ArtistService {
   }
 
   delete(id: string) {
-    this.artists = this.artists.filter((item) => item.id !== id);
+    const index = this.artists.findIndex((item) => item.id === id);
+
+    if (index < 0) {
+      return null;
+    }
+
+    return this.artists.splice(index, 1)[0];
   }
 }

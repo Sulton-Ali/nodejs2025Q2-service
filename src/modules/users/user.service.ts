@@ -1,5 +1,5 @@
 import { mapToUserDto } from './mappers/mapToDto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -36,10 +36,15 @@ export class UserService {
     if (index < 0) {
       return null;
     }
+
+    if (!this.verifyPassword(id, dto.oldPassword)) {
+      throw new ForbiddenException();
+    }
+
     const user = this.users[index];
     const updatedUser: User = {
       ...user,
-      ...dto,
+      password: dto.newPassword,
       version: user.version + 1,
       updatedAt: Date.now(),
     };
@@ -47,16 +52,18 @@ export class UserService {
     return mapToUserDto(updatedUser);
   }
 
-  delete(id: string): void {
-    this.users = this.users.filter((item) => item.id !== id);
+  delete(id: string) {
+    const index = this.users.findIndex((item) => item.id === id);
+
+    if (index < 0) {
+      return null;
+    }
+
+    return this.users.splice(index, 1)[0];
   }
 
   verifyPassword(userId: string, password: string) {
     const foundUser = this.users.find((item) => item.id === userId);
-
-    if (!foundUser) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
 
     return foundUser.password === password;
   }

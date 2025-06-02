@@ -38,7 +38,13 @@ export class TrackService {
     return updatedTrack;
   }
 
-  delete(id: string): void {
-    this.tracks = this.tracks.filter((item) => item.id !== id);
+  delete(id: string) {
+    const index = this.tracks.findIndex((item) => item.id === id);
+
+    if (index < 0) {
+      return null;
+    }
+
+    return this.tracks.splice(index, 1)[0];
   }
 }

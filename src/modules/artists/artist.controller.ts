@@ -60,7 +60,10 @@ export class ArtistController {
   @Delete(':id')
   @HttpCode(204)
   delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.artistService.delete(id);
+    const deletedArtist = this.artistService.delete(id);
+    if (!deletedArtist) {
+      throw new NotFoundException(`Artist with id ${id} not founds`);
+    }
     return;
   }
 }
