@@ -14,6 +14,10 @@ export class AlbumService {
     return this.albums;
   }
 
+  findAllIn(list: string[]): Album[] {
+    return this.albums.filter((item) => list.includes(item.id));
+  }
+
   findOne(id: string): Album | undefined {
     return this.albums.find((item) => item.id === id);
   }

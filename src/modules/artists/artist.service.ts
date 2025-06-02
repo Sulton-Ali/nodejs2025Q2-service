@@ -18,6 +18,10 @@ export class ArtistService {
     return this.artists;
   }
 
+  findAllIn(list: string[]): Artist[] {
+    return this.artists.filter((item) => list.includes(item.id));
+  }
+
   findOne(id: string): Artist | undefined {
     return this.artists.find((item) => item.id === id);
   }

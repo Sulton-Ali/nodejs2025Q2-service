@@ -11,6 +11,10 @@ export class TrackService {
     return this.tracks;
   }
 
+  findAllIn(list: string[]): Track[] {
+    return this.tracks.filter((item) => list.includes(item.id));
+  }
+
   findOne(id: string): Track | undefined {
     return this.tracks.find((item) => item.id === id);
   }
