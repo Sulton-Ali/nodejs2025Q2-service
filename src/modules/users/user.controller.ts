@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   NotFoundException,
@@ -46,10 +47,15 @@ export class UserController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateUserDto,
   ) {
+    if (!this.userService.verifyPassword(id, dto.oldPassword)) {
+      throw new ForbiddenException(`Passed password is wrong`);
+    }
+
     const updatedUser = this.userService.update(id, dto);
     if (!updatedUser) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
+
     return updatedUser;
   }
 

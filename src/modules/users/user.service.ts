@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { mapToUserDto } from './mappers/mapToDto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -8,29 +9,15 @@ export class UserService {
   private users: User[] = [];
 
   findAll(): Omit<User, 'password'>[] {
-    return this.users.map((item) => ({
-      id: item.id,
-      login: item.login,
-      version: item.version,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    }));
+    return this.users.map(mapToUserDto);
   }
 
   findOne(id: string): Omit<User, 'password'> | undefined {
     const foundUser = this.users.find((item) => item.id === id);
-    return foundUser
-      ? {
-          id: foundUser.id,
-          login: foundUser.login,
-          version: foundUser.version,
-          createdAt: foundUser.createdAt,
-          updatedAt: foundUser.updatedAt,
-        }
-      : undefined;
+    return mapToUserDto(foundUser);
   }
 
-  create(dto: CreateUserDto): User {
+  create(dto: CreateUserDto) {
     const now = Date.now();
     const user: User = {
       id: crypto.randomUUID(),
@@ -41,10 +28,10 @@ export class UserService {
       updatedAt: now,
     };
     this.users.push(user);
-    return user;
+    return mapToUserDto(user);
   }
 
-  update(id: string, dto: UpdateUserDto): User | null {
+  update(id: string, dto: UpdateUserDto) {
     const index = this.users.findIndex((item) => item.id === id);
     if (index < 0) {
       return null;
@@ -57,10 +44,20 @@ export class UserService {
       updatedAt: Date.now(),
     };
     this.users[index] = updatedUser;
-    return updatedUser;
+    return mapToUserDto(updatedUser);
   }
 
   delete(id: string): void {
     this.users = this.users.filter((item) => item.id !== id);
+  }
+
+  verifyPassword(userId: string, password: string) {
+    const foundUser = this.users.find((item) => item.id === userId);
+
+    if (!foundUser) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    return foundUser.password === password;
   }
 }
