@@ -70,3 +70,177 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+## Using the API Endpoints (No Auth Required)
+
+After starting the application, you can interact with the API using tools like curl, Postman, or any HTTP client. Below are some example requests. The base URL is `http://localhost:4000`.
+
+> For full API documentation and request/response schemas, visit [http://localhost:4000/doc/](http://localhost:4000/doc/) in your browser.
+
+### Users
+
+- Get all users:
+
+```bash
+curl http://localhost:4000/users
+```
+
+- Get user by ID:
+
+```bash
+curl http://localhost:4000/users/<userId>
+```
+
+- Create user:
+
+```bash
+curl -X POST http://localhost:4000/users \
+  -H "Content-Type: application/json" \
+  -d '{"login": "TestUser", "password": "secretPassword"}'
+```
+
+- Update user password:
+
+```bash
+curl -X PUT http://localhost:4000/users/<userId> \
+  -H "Content-Type: application/json" \
+  -d '{"oldPassword": "secretPassword", "newPassword": "newSecret"}'
+```
+
+- Delete user:
+
+```bash
+curl -X DELETE http://localhost:4000/users/<userId>
+```
+
+### Tracks
+
+- Get all tracks:
+
+```bash
+curl http://localhost:4000/tracks
+```
+
+- Get track by ID:
+
+```bash
+curl http://localhost:4000/tracks/<trackId>
+```
+
+- Create track:
+
+```bash
+curl -X POST http://localhost:4000/tracks \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Song Name", "duration": 200}'
+```
+
+- Update track:
+
+```bash
+curl -X PUT http://localhost:4000/tracks/<trackId> \
+  -H "Content-Type: application/json" \
+  -d '{"name": "New Name", "duration": 210}'
+```
+
+- Delete track:
+
+```bash
+curl -X DELETE http://localhost:4000/tracks/<trackId>
+```
+
+### Albums
+
+- Get all albums:
+
+```bash
+curl http://localhost:4000/albums
+```
+
+- Get album by ID:
+
+```bash
+curl http://localhost:4000/albums/<albumId>
+```
+
+- Create album:
+
+```bash
+curl -X POST http://localhost:4000/albums \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Album Name", "year": 2024}'
+```
+
+- Update album:
+
+```bash
+curl -X PUT http://localhost:4000/albums/<albumId> \
+  -H "Content-Type: application/json" \
+  -d '{"name": "New Album Name", "year": 2025}'
+```
+
+- Delete album:
+
+```bash
+curl -X DELETE http://localhost:4000/albums/<albumId>
+```
+
+### Artists
+
+- Get all artists:
+
+```bash
+curl http://localhost:4000/artists
+```
+
+- Get artist by ID:
+
+```bash
+curl http://localhost:4000/artists/<artistId>
+```
+
+- Create artist:
+
+```bash
+curl -X POST http://localhost:4000/artists \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Artist Name", "grammy": false}'
+```
+
+- Update artist:
+
+```bash
+curl -X PUT http://localhost:4000/artists/<artistId> \
+  -H "Content-Type: application/json" \
+  -d '{"name": "New Artist Name", "grammy": true}'
+```
+
+- Delete artist:
+
+```bash
+curl -X DELETE http://localhost:4000/artists/<artistId>
+```
+
+### Favorites
+
+- Get all favorites:
+
+```bash
+curl http://localhost:4000/favs
+```
+
+- Add track/album/artist to favorites:
+
+```bash
+curl -X POST http://localhost:4000/favs/track/<trackId>
+curl -X POST http://localhost:4000/favs/album/<albumId>
+curl -X POST http://localhost:4000/favs/artist/<artistId>
+```
+
+- Remove track/album/artist from favorites:
+
+```bash
+curl -X DELETE http://localhost:4000/favs/track/<trackId>
+curl -X DELETE http://localhost:4000/favs/album/<albumId>
+curl -X DELETE http://localhost:4000/favs/artist/<artistId>
+```
