@@ -2,10 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { Artist } from './entities/artist.entity';
 import { CreateArtistDto } from './dtos/create-artist.dto';
 import { UpdateArtistDto } from './dtos/update-artist.dto';
+import { AlbumService } from '../albums/album.service';
+import { TrackService } from '../tracks/track.service';
 
 @Injectable()
 export class ArtistService {
   private artists: Artist[] = [];
+
+  constructor(
+    private readonly albumService: AlbumService,
+    private readonly trackService: TrackService,
+  ) {}
 
   findAll(): Artist[] {
     return this.artists;
@@ -41,6 +48,9 @@ export class ArtistService {
     if (index < 0) {
       return null;
     }
+
+    this.albumService.removeArtist(id);
+    this.trackService.removeArtist(id);
 
     return this.artists.splice(index, 1)[0];
   }

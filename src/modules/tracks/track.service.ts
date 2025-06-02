@@ -47,4 +47,30 @@ export class TrackService {
 
     return this.tracks.splice(index, 1)[0];
   }
+
+  removeAlbum(albumId: string) {
+    this.tracks = this.tracks.map((item) => {
+      if (item.albumId === albumId) {
+        return {
+          ...item,
+          albumId: null,
+        };
+      }
+
+      return item;
+    });
+  }
+
+  removeArtist(artistId: string) {
+    this.tracks = this.tracks.map((item) => {
+      if (item.artistId === artistId) {
+        return {
+          ...item,
+          artistId: null,
+        };
+      }
+
+      return item;
+    });
+  }
 }
