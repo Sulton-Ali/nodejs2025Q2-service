@@ -1,0 +1,41 @@
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local
+
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: home_library_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: home_library_app
+    restart: always
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      PORT: ${PORT}
+    depends_on:
+      - db
+    networks:
+      - app-network
+    ports:
+      - '${PORT}:${PORT}'

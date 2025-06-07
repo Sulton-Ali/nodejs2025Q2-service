@@ -22,7 +22,9 @@
     "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "docker:dev": "sudo docker compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "sudo docker compose -f docker-compose.prod.yml up --build"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",
