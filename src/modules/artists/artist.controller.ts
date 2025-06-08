@@ -11,7 +11,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { Artist } from './entities/artist.entity';
 import { CreateArtistDto } from './dtos/create-artist.dto';
 import { UpdateArtistDto } from './dtos/update-artist.dto';
 
@@ -20,15 +19,15 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Get()
-  getAll(): Artist[] {
-    return this.artistService.findAll();
+  async getAll() {
+    console.log('Fetching all artists!');
+
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
-  getById(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Artist {
-    const artist = this.artistService.findOne(id);
+  async getById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const artist = await this.artistService.findOne(id);
 
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not founds`);

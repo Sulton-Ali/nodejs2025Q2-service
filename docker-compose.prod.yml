@@ -31,7 +31,7 @@ services:
     container_name: home_library_app
     restart: always
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      DATABASE_URL: ${DATABASE_URL}
       PORT: ${PORT}
     depends_on:
       - db

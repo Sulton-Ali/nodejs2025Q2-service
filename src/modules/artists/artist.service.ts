@@ -4,58 +4,68 @@ import { CreateArtistDto } from './dtos/create-artist.dto';
 import { UpdateArtistDto } from './dtos/update-artist.dto';
 import { AlbumService } from '../albums/album.service';
 import { TrackService } from '../tracks/track.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  private artists: Artist[] = [];
-
   constructor(
+    private readonly prismaService: PrismaService,
     private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
   ) {}
 
-  findAll(): Artist[] {
-    return this.artists;
+  async findAll(): Promise<Artist[]> {
+    return await this.prismaService.artist.findMany();
   }
 
-  findAllIn(list: string[]): Artist[] {
-    return this.artists.filter((item) => list.includes(item.id));
+  async findAllIn(list: string[]): Promise<Artist[]> {
+    return await this.prismaService.artist.findMany({
+      where: {
+        id: {
+          in: list,
+        },
+      },
+    });
   }
 
-  findOne(id: string): Artist | undefined {
-    return this.artists.find((item) => item.id === id);
+  async findOne(id: string): Promise<Artist | null> {
+    return await this.prismaService.artist.findUnique({
+      where: { id },
+    });
   }
 
-  create(dto: CreateArtistDto): Artist {
+  async create(dto: CreateArtistDto): Promise<Artist> {
     const artist = {
       ...dto,
       id: crypto.randomUUID(),
     };
-    this.artists.push(artist);
-    return artist;
-  }
-
-  update(id: string, dto: UpdateArtistDto) {
-    const index = this.artists.findIndex((item) => item.id === id);
-    if (index < 0) {
-      return null;
-    }
-
-    const newArtist = Object.assign(this.artists[index], dto);
-    this.artists.splice(index, 1, newArtist);
+    const newArtist = await this.prismaService.artist.create({ data: artist });
     return newArtist;
   }
 
-  delete(id: string) {
-    const index = this.artists.findIndex((item) => item.id === id);
-
-    if (index < 0) {
+  async update(id: string, dto: UpdateArtistDto): Promise<Artist | null> {
+    const foundArtist = await this.findOne(id);
+    if (!foundArtist) {
       return null;
     }
 
-    this.albumService.removeArtist(id);
-    this.trackService.removeArtist(id);
+    const newArtist = {
+      ...foundArtist,
+      ...dto,
+      id: foundArtist.id,
+    };
+    const result = await this.prismaService.artist.update({
+      where: { id: foundArtist.id },
+      data: newArtist,
+    });
+    return result;
+  }
 
-    return this.artists.splice(index, 1)[0];
+  async delete(id: string): Promise<Artist | null> {
+    const result = await this.prismaService.artist.delete({
+      where: { id },
+    });
+
+    return result;
   }
 }
