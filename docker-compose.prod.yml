@@ -1,8 +1,6 @@
 services:
   db:
-    build:
-      context: .
-      dockerfile: Dockerfile.database
+    image: jssalijalol/home-library-db:1.0.0
     container_name: home_library_db
     restart: always
     environment:
@@ -17,10 +15,7 @@ services:
     networks:
       - app_network
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-      no_cache: true
+    image: jssalijalol/home-library-app:1.0.0
     container_name: home_library_app
     restart: always
     environment:
