@@ -20,15 +20,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAll(): Omit<User, 'password'>[] {
-    return this.userService.findAll();
+  async getAll(): Promise<Omit<User, 'password'>[]> {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
-  getById(
+  async getById(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Omit<User, 'password'> {
-    const user = this.userService.findOne(id);
+  ): Promise<Omit<User, 'password'> | undefined> {
+    const user = await this.userService.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -37,32 +37,28 @@ export class UserController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto);
+  async create(@Body() dto: CreateUserDto) {
+    return await this.userService.create(dto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateUserDto,
-  ) {
-    const updatedUser = this.userService.update(id, dto);
+  ): Promise<Omit<User, 'password'> | undefined> {
+    const updatedUser = await this.userService.update(id, dto);
     if (!updatedUser) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-
     return updatedUser;
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const deletedUser = this.userService.delete(id);
-
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const deletedUser = await this.userService.delete(id);
     if (!deletedUser) {
-      throw new NotFoundException();
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-
-    return;
   }
 }

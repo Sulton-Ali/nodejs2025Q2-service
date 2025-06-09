@@ -38,20 +38,7 @@ services:
       - ./package-lock.json:/app/package-lock.json
     networks:
       - app_network
-    command:
-      [
-    #     'npm',
-    #     'run',
-    #     'prisma:migrate',
-    #     '&&',
-    #     'npm',
-    #     'run',
-    #     'prisma:generate',
-    #     '&&',
-        'npm',
-        'run',
-        'start:dev',
-      ]
+    command: ['npm', 'run', 'start:dev']
 
 volumes:
   db_data:

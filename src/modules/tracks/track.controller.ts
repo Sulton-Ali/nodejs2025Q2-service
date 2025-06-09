@@ -11,22 +11,24 @@ import {
   Put,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { Track } from './entities/track.entity';
 import { CreateTrackDto } from './dtos/create-track.dto';
 import { UpdateTrackDto } from './dtos/update-track.dto';
+import { Track } from 'generated/prisma';
 
 @Controller('track')
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Get()
-  getAll(): Track[] {
+  async getAll(): Promise<Track[]> {
     return this.trackService.findAll();
   }
 
   @Get(':id')
-  getById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Track {
-    const track = this.trackService.findOne(id);
+  async getById(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<Track> {
+    const track = await this.trackService.findOne(id);
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
@@ -35,16 +37,16 @@ export class TrackController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateTrackDto) {
-    return this.trackService.create(dto);
+  async create(@Body() dto: CreateTrackDto): Promise<Track> {
+    return await this.trackService.create(dto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateTrackDto,
-  ) {
-    const updatedTrack = this.trackService.update(id, dto);
+  ): Promise<Track | null> {
+    const updatedTrack = await this.trackService.update(id, dto);
     if (!updatedTrack) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
@@ -53,11 +55,11 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const deletedTrack = this.trackService.delete(id);
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const deletedTrack = await this.trackService.delete(id);
 
     if (!deletedTrack) {
-      throw new NotFoundException();
+      throw new NotFoundException(`Track with id ${id} not found`);
     }
     return;
   }

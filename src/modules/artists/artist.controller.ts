@@ -13,6 +13,7 @@ import {
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dtos/create-artist.dto';
 import { UpdateArtistDto } from './dtos/update-artist.dto';
+import { Artist } from 'generated/prisma';
 
 @Controller('artist')
 export class ArtistController {
@@ -38,19 +39,19 @@ export class ArtistController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateArtistDto) {
-    return this.artistService.create(dto);
+  async create(@Body() dto: CreateArtistDto) {
+    return await this.artistService.create(dto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateArtistDto,
-  ) {
-    const updatedArtist = this.artistService.update(id, dto);
+  ): Promise<Artist | null> {
+    const updatedArtist = await this.artistService.update(id, dto);
 
     if (!updatedArtist) {
-      throw new NotFoundException(`Artist with id ${id} not founds`);
+      throw new NotFoundException(`Artist with id ${id} not found`);
     }
 
     return updatedArtist;
@@ -58,10 +59,10 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const deletedArtist = this.artistService.delete(id);
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const deletedArtist = await this.artistService.delete(id);
     if (!deletedArtist) {
-      throw new NotFoundException(`Artist with id ${id} not founds`);
+      throw new NotFoundException(`Artist with id ${id} not found`);
     }
     return;
   }

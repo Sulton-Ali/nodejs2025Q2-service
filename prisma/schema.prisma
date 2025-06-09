@@ -17,9 +17,9 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  login     String   @unique
+  login     String
   password  String
-  version   Int
+  version   Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -37,7 +37,7 @@ model Album {
   name     String
   year     Int
   artistId String?
-  artist   Artist? @relation(fields: [artistId], references: [id])
+  artist   Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   tracks   Track[]
 }
 
@@ -46,9 +46,9 @@ model Track {
   name     String
   duration Int
   albumId  String?
-  album    Album?  @relation(fields: [albumId], references: [id])
+  album    Album?  @relation(fields: [albumId], references: [id], onDelete: SetNull)
   artistId String?
-  artist   Artist? @relation(fields: [artistId], references: [id])
+  artist   Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
 }
 
 model Favorite {

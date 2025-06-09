@@ -6,10 +6,10 @@ COPY package*.json ./
 RUN npm install
 
 
-COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY prisma ./prisma
 
 ARG PORT=3000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["sh", "-c", "npm run prisma:migrate && npm run prisma:generate"]
+CMD ["sh", "-c", "npm run prisma:deploy"]

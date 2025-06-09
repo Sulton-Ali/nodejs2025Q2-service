@@ -1,90 +1,161 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { Favorites } from './entities/favorites.entity';
-import { ArtistService } from '../artists/artist.service';
-import { AlbumService } from '../albums/album.service';
-import { TrackService } from '../tracks/track.service';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class FavoritesService {
-  private favorites: Favorites = { artists: [], albums: [], tracks: [] };
+  constructor(private readonly prismaService: PrismaService) {}
 
-  constructor(
-    @Inject(forwardRef(() => ArtistService))
-    private readonly artistService: ArtistService,
-    @Inject(forwardRef(() => AlbumService))
-    private readonly albumService: AlbumService,
-    @Inject(forwardRef(() => TrackService))
-    private readonly trackService: TrackService,
-  ) {}
+  async getAll() {
+    const favorites = await this.prismaService.favorite.findFirst();
 
-  getAll() {
-    const artists = this.artistService.findAllIn(this.favorites.artists);
-    const albums = this.albumService.findAllIn(this.favorites.albums);
-    const tracks = this.trackService.findAllIn(this.favorites.tracks);
-    const favorites = {
+    if (!favorites) {
+      const result = await this.prismaService.favorite.create({
+        data: {
+          artists: [],
+          albums: [],
+          tracks: [],
+        },
+      });
+
+      return {
+        artists: result.artists,
+        albums: result.albums,
+        tracks: result.tracks,
+      };
+    }
+
+    const [artists, albums, tracks] = await Promise.all([
+      this.prismaService.artist.findMany({
+        where: {
+          id: {
+            in: favorites.artists,
+          },
+        },
+      }),
+      this.prismaService.album.findMany({
+        where: {
+          id: {
+            in: favorites.albums,
+          },
+        },
+      }),
+      this.prismaService.track.findMany({
+        where: {
+          id: {
+            in: favorites.tracks,
+          },
+        },
+      }),
+    ]);
+    return {
       artists,
       albums,
       tracks,
     };
-    return favorites;
   }
 
-  addArtist(id: string) {
-    const artist = this.artistService.findOne(id);
+  async addArtist(id: string) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
 
     if (!artist) {
       throw new UnprocessableEntityException();
     }
 
-    if (!this.favorites.artists.includes(id)) {
-      this.favorites.artists.push(id);
-    }
+    const favorite = await this.prismaService.favorite.findFirst();
+
+    await this.prismaService.favorite.update({
+      where: { id: favorite.id },
+      data: {
+        artists: {
+          set: [...favorite.artists, id],
+        },
+      },
+    });
+
+    return artist;
   }
 
-  addAlbum(id: string) {
-    const album = this.albumService.findOne(id);
+  async addAlbum(id: string) {
+    const album = await this.prismaService.album.findUnique({
+      where: { id },
+    });
 
     if (!album) {
       throw new UnprocessableEntityException();
     }
 
-    if (!this.favorites.albums.includes(id)) {
-      this.favorites.albums.push(id);
-    }
+    const favorite = await this.prismaService.favorite.findFirst();
+
+    await this.prismaService.favorite.update({
+      where: { id: favorite.id },
+      data: {
+        albums: {
+          set: [...favorite.albums, id],
+        },
+      },
+    });
+
+    return album;
   }
 
-  addTrack(id: string) {
-    const track = this.trackService.findOne(id);
+  async addTrack(id: string) {
+    const track = await this.prismaService.track.findUnique({
+      where: { id },
+    });
 
     if (!track) {
       throw new UnprocessableEntityException();
     }
 
-    if (!this.favorites.tracks.includes(id)) {
-      this.favorites.tracks.push(id);
-    }
+    const favorite = await this.prismaService.favorite.findFirst();
+
+    await this.prismaService.favorite.update({
+      where: { id: favorite.id },
+      data: {
+        tracks: {
+          set: [...favorite.tracks, id],
+        },
+      },
+    });
+
+    return track;
   }
 
-  removeArtist(id: string) {
-    this.favorites.artists = this.favorites.artists.filter(
-      (artistId) => artistId !== id,
-    );
+  async removeArtist(id: string) {
+    const favorite = await this.prismaService.favorite.findFirst();
+    await this.prismaService.favorite.update({
+      where: { id: favorite.id },
+      data: {
+        artists: {
+          set: favorite.artists.filter((artistId) => artistId !== id),
+        },
+      },
+    });
   }
 
-  removeAlbum(id: string) {
-    this.favorites.albums = this.favorites.albums.filter(
-      (albumId) => albumId !== id,
-    );
+  async removeAlbum(id: string) {
+    const favorite = await this.prismaService.favorite.findFirst();
+    await this.prismaService.favorite.update({
+      where: { id: favorite.id },
+      data: {
+        albums: {
+          set: favorite.albums.filter((albumId) => albumId !== id),
+        },
+      },
+    });
   }
 
-  removeTrack(id: string) {
-    this.favorites.tracks = this.favorites.tracks.filter(
-      (trackId) => trackId !== id,
-    );
+  async removeTrack(id: string) {
+    const favorite = await this.prismaService.favorite.findFirst();
+    await this.prismaService.favorite.update({
+      where: { id: favorite.id },
+      data: {
+        tracks: {
+          set: favorite.tracks.filter((trackId) => trackId !== id),
+        },
+      },
+    });
   }
 }
