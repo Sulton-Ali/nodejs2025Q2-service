@@ -18,7 +18,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
+      no_cache: true
     container_name: home_library_app
     restart: always
     environment:
@@ -28,17 +29,9 @@ services:
       - '${PORT}:${PORT}'
     depends_on:
       - db
-    volumes:
-      - ./src:/app/src
-      - ./prisma:/app/prisma
-      - ./generated:/app/generated
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./tsconfig.build.json:/app/tsconfig.build.json
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
     networks:
       - app_network
-    command: ['npm', 'run', 'start:dev']
+    command: ['npm', 'run', 'start:prod']
 
 volumes:
   db_data:
