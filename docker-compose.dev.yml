@@ -31,15 +31,8 @@ services:
       - db
     volumes:
       - ./src:/app/src
-      - ./prisma:/app/prisma
-      - ./generated:/app/generated
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./tsconfig.build.json:/app/tsconfig.build.json
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
     networks:
       - app_network
-    command: ['npm', 'run', 'start:dev']
 
 volumes:
   db_data:

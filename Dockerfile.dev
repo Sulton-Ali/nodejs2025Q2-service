@@ -3,13 +3,13 @@ FROM node:lts-slim
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+COPY tsconfig*.json ./
+COPY prisma/ ./prisma
+RUN npm install && npx prisma generate
 
-
-COPY prisma ./prisma
 
 ARG PORT=3000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["sh", "-c", "npm run prisma:deploy"]
+CMD ["sh", "-c", "npm run prisma:deploy && npm run start:dev"]
