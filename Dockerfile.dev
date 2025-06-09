@@ -1,8 +1,15 @@
-FROM node:lts-alpine
+
+FROM node:lts-slim
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm install
+
+
+COPY prisma/schema.prisma ./prisma/schema.prisma
+
 ARG PORT=3000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
-CMD ["npm", "run", "start:dev"]
+
+CMD ["sh", "-c", "npm run prisma:migrate && npm run prisma:generate"]
