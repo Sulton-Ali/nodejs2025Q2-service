@@ -25,6 +25,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build",
+    "docker:scout:app": "docker scout cves jssalijalol/nest-app:1.0.0",
+    "docker:scout:db": "docker scout cves jssalijalol/postgres-db:1.0.0",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:generate": "npx prisma generate",
     "prisma:deploy": "npx prisma deploy"

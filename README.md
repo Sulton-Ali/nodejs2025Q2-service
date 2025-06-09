@@ -24,6 +24,13 @@ npm run docker:dev
 npm run docker:prod
 ```
 
+## Scan vulnerabilities
+
+```
+npm run docker:scout:app
+npm run docker:scout:db
+```
+
 ## Installing NPM modules
 
 ```

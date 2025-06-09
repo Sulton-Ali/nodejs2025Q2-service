@@ -13,6 +13,7 @@ services:
       - '${POSTGRES_PORT}:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
+      - db_logs:/var/log/postgresql
     networks:
       - app_network
   app:
@@ -35,6 +36,8 @@ services:
 
 volumes:
   db_data:
+    driver: local
+  db_logs:
     driver: local
 
 networks:
