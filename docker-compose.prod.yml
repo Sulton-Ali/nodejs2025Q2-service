@@ -32,7 +32,6 @@ services:
       - db
     networks:
       - app_network
-    command: ['npm', 'run', 'start:prod']
 
 volumes:
   db_data:

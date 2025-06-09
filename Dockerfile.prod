@@ -8,21 +8,21 @@ RUN npm ci
 COPY tsconfig*.json ./
 COPY src/ ./src
 COPY prisma ./prisma
-COPY generated ./generated
 
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:lts-slim AS runner
 WORKDIR /app
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/generated ./generated
+COPY --from=builder /app/prisma ./prisma
 COPY package*.json ./
-COPY prisma ./prisma
-COPY generated ./generated
 RUN npm ci --production
 
 ARG PORT=3000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["sh", "-c", "npm run prisma:deploy"]
+CMD ["sh", "-c", "npm run prisma:deploy && npm run start:prod"]
