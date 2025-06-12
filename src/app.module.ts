@@ -7,6 +7,8 @@ import { UserModule } from './modules/users/user.module';
 import { TrackModule } from './modules/tracks/track.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { AlbumModule } from './modules/albums/album.module';
+import { PrismaService } from './modules/prisma/prisma.service';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 import appConfig from './config/app.config';
 
@@ -17,6 +19,7 @@ import appConfig from './config/app.config';
       envFilePath: ['.env'],
       load: [appConfig],
     }),
+    PrismaModule,
     UserModule,
     ArtistModule,
     TrackModule,
@@ -24,6 +27,6 @@ import appConfig from './config/app.config';
     AlbumModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}

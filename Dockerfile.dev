@@ -1,0 +1,15 @@
+
+FROM node:lts-slim
+WORKDIR /app
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY prisma/ ./prisma
+RUN npm install && npx prisma generate
+
+
+ARG PORT=3000
+ENV PORT=${PORT}
+EXPOSE ${PORT}
+
+CMD ["sh", "-c", "npm run prisma:deploy && npm run start:dev"]

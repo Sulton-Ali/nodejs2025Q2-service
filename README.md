@@ -4,11 +4,31 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Dockerwith docker compose [Get Docker](https://docs.docker.com/get-started/get-docker/)
 
 ## Downloading
 
 ```
 git clone {repository URL}
+```
+
+## Running on container with dev mode
+
+```
+npm run docker:dev
+```
+
+## Running on container with production mode
+
+```
+npm run docker:prod
+```
+
+## Scan vulnerabilities
+
+```
+npm run docker:scout:app
+npm run docker:scout:db
 ```
 
 ## Installing NPM modules

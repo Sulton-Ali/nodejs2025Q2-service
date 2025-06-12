@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Local environment files
+# .env
+.env.local
+.env.*.local
+
+# Logs and temporary files
+logs
+*.log
+tmp
+temp
+
+# OS files
+.DS_Store
+
+# Git metadata
+.git
+.gitignore
+
+# Docker-related
+docker-compose.yml
+Dockerfile*
+
+# Build output
+dist
+build

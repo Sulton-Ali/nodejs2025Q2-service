@@ -11,22 +11,24 @@ import {
   Put,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { Album } from './entities/album.entity';
 import { CreateAlbumDto } from './dtos/create-album.dto';
 import { UpdateAlbumDto } from './dtos/update-album.dto';
+import { Album } from 'generated/prisma';
 
 @Controller('album')
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Get()
-  getAll(): Album[] {
+  async getAll(): Promise<Album[]> {
     return this.albumService.findAll();
   }
 
   @Get(':id')
-  getById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Album {
-    const album = this.albumService.findOne(id);
+  async getById(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<Album> {
+    const album = await this.albumService.findOne(id);
     if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
@@ -35,16 +37,16 @@ export class AlbumController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateAlbumDto) {
-    return this.albumService.create(dto);
+  async create(@Body() dto: CreateAlbumDto): Promise<Album> {
+    return await this.albumService.create(dto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateAlbumDto,
-  ) {
-    const updatedAlbum = this.albumService.update(id, dto);
+  ): Promise<Album | null> {
+    const updatedAlbum = await this.albumService.update(id, dto);
     if (!updatedAlbum) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
@@ -53,11 +55,11 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    const deletedAlbum = this.albumService.delete(id);
+  async delete(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const deletedAlbum = await this.albumService.delete(id);
 
     if (!deletedAlbum) {
-      throw new NotFoundException();
+      throw new NotFoundException(`Album with id ${id} not found`);
     }
 
     return;

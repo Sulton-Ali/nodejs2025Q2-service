@@ -1,70 +1,80 @@
 import { mapToUserDto } from './mappers/mapToDto';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { User } from 'generated/prisma';
+import { User as UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  constructor(private readonly prismaService: PrismaService) {}
 
-  findAll(): Omit<User, 'password'>[] {
-    return this.users.map(mapToUserDto);
+  async findAll(): Promise<Omit<UserEntity, 'password'>[]> {
+    const users = await this.prismaService.user.findMany();
+    return users.map(mapToUserDto);
   }
 
-  findOne(id: string): Omit<User, 'password'> | undefined {
-    const foundUser = this.users.find((item) => item.id === id);
+  async findOne(id: string): Promise<Omit<UserEntity, 'password'> | undefined> {
+    const foundUser = await this.prismaService.user.findUnique({
+      where: { id },
+    });
     return mapToUserDto(foundUser);
   }
 
-  create(dto: CreateUserDto) {
-    const now = Date.now();
-    const user: User = {
-      id: crypto.randomUUID(),
-      login: dto.login,
-      password: dto.password,
-      version: 1,
-      createdAt: now,
-      updatedAt: now,
-    };
-    this.users.push(user);
-    return mapToUserDto(user);
+  async create(
+    dto: CreateUserDto,
+  ): Promise<Omit<UserEntity, 'password'> | undefined> {
+    const createdUser = await this.prismaService.user.create({
+      data: {
+        ...dto,
+        version: 1,
+        id: crypto.randomUUID(),
+      },
+    });
+    return mapToUserDto(createdUser);
   }
 
-  update(id: string, dto: UpdateUserDto) {
-    const index = this.users.findIndex((item) => item.id === id);
-    if (index < 0) {
+  async update(
+    id: string,
+    dto: UpdateUserDto,
+  ): Promise<Omit<UserEntity, 'password'> | null> {
+    const foundUser = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!foundUser) {
       return null;
     }
 
-    if (!this.verifyPassword(id, dto.oldPassword)) {
-      throw new ForbiddenException();
+    if (foundUser.password !== dto.oldPassword) {
+      throw new ForbiddenException('Password is incorrect');
     }
 
-    const user = this.users[index];
-    const updatedUser: User = {
-      ...user,
-      password: dto.newPassword,
-      version: user.version + 1,
-      updatedAt: Date.now(),
-    };
-    this.users[index] = updatedUser;
+    const updatedUser = await this.prismaService.user.update({
+      where: { id },
+      data: {
+        version: foundUser.version + 1,
+        password: dto.newPassword,
+      },
+    });
+
     return mapToUserDto(updatedUser);
   }
 
-  delete(id: string) {
-    const index = this.users.findIndex((item) => item.id === id);
+  async delete(id: string): Promise<User | null> {
+    const foundUser = await this.prismaService.user.findUnique({
+      where: { id },
+    });
 
-    if (index < 0) {
+    if (!foundUser) {
       return null;
     }
 
-    return this.users.splice(index, 1)[0];
-  }
+    await this.prismaService.user.delete({
+      where: { id },
+    });
 
-  verifyPassword(userId: string, password: string) {
-    const foundUser = this.users.find((item) => item.id === userId);
-
-    return foundUser.password === password;
+    return foundUser;
   }
 }

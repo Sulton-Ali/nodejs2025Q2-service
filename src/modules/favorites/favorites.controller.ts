@@ -14,49 +14,54 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  getAll() {
-    return this.favoritesService.getAll();
+  async getAll() {
+    return await this.favoritesService.getAll();
   }
 
   @Post('artist/:id')
   @HttpCode(201)
-  addArtist(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.favoritesService.addArtist(id);
-    return;
+  async addArtist(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    return await this.favoritesService.addArtist(id);
   }
 
   @Post('album/:id')
   @HttpCode(201)
-  addAlbum(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.favoritesService.addAlbum(id);
-    return;
+  async addAlbum(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    return await this.favoritesService.addAlbum(id);
   }
 
   @Post('track/:id')
   @HttpCode(201)
-  addTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.favoritesService.addTrack(id);
-    return;
+  async addTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    return await this.favoritesService.addTrack(id);
   }
 
   @Delete('artist/:id')
   @HttpCode(204)
-  removeArtist(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.favoritesService.removeArtist(id);
+  async removeArtist(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    await this.favoritesService.removeArtist(id);
     return;
   }
 
   @Delete('album/:id')
   @HttpCode(204)
-  removeAlbum(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.favoritesService.removeAlbum(id);
+  async removeAlbum(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    await this.favoritesService.removeAlbum(id);
     return;
   }
 
   @Delete('track/:id')
   @HttpCode(204)
-  removeTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    this.favoritesService.removeTrack(id);
+  async removeTrack(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    await this.favoritesService.removeTrack(id);
     return;
   }
 }
