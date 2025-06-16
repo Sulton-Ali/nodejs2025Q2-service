@@ -10,12 +10,14 @@
 
 ```
 git clone {repository URL}
+
 ```
 
 ## Running on container with dev mode
 
 ```
 npm run docker:dev
+
 ```
 
 ## Running on container with production mode
